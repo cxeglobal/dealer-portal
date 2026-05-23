@@ -463,6 +463,12 @@ def portal_orders():
     total_spend = float(scalar(conn, f"SELECT COALESCE(SUM(total),0) FROM dealer_orders WHERE dealer_id={PH} AND status!='Cancelled'", (dealer['id'],)))
     pending_count = int(scalar(conn, f"SELECT COUNT(*) FROM dealer_orders WHERE dealer_id={PH} AND status IN ('New','Processing')", (dealer['id'],)))
     conn.close()
+    # Parse items_json for each order
+    for o in orders:
+        try:
+            o['items'] = json.loads(o.get('items_json','[]') or '[]')
+        except:
+            o['items'] = []
     cart_count = sum(v.get('qty',0) for v in session.get('cart',{}).values())
     return render_template('orders.html',
         orders=orders, total_spend=total_spend, pending_count=pending_count,
