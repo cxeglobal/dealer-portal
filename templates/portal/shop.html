@@ -271,19 +271,38 @@
 </div>
 
 <script>
-var _makes = [], _models = [], _years = [];
+var WS_KEY = 'ec8f53e4a758566f89605631bb5a5fe3';
+var WS_BASE = 'https://api.wheel-size.com/v2';
+
+function wsGet(endpoint, params) {
+  var url = WS_BASE + endpoint + '?user_key=' + WS_KEY + '&region=us';
+  if (params) url += '&' + params;
+  return fetch(url).then(function(r){ return r.json(); });
+}
+
+function parseNames(data, field) {
+  var list = Array.isArray(data) ? data : (data && data.data ? data.data : []);
+  return list.map(function(i){
+    if (typeof i === 'string') return i;
+    if (typeof i === 'number') return String(i);
+    return i[field] || i.name || i.slug || i.make || i.model || i.year || '';
+  }).filter(Boolean).sort();
+}
 
 // Load makes on page load
-fetch('/portal/api/makes')
-  .then(r=>r.json())
+wsGet('/makes/')
   .then(function(data){
-    _makes = data;
+    var makes = parseNames(data, 'name');
     var sel = document.getElementById('ymm-make');
     if(!sel) return;
     sel.innerHTML = '<option value="">— select make —</option>';
-    data.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o); });
+    makes.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o); });
     sel.disabled = false;
-  }).catch(function(){ if(document.getElementById('ymm-make')) document.getElementById('ymm-make').innerHTML='<option value="">API unavailable</option>'; });
+  }).catch(function(e){
+    console.log('WheelSize makes error:', e);
+    var sel = document.getElementById('ymm-make');
+    if(sel) sel.innerHTML='<option value="">API unavailable — use filters below</option>';
+  });
 
 function loadModels() {
   var make = document.getElementById('ymm-make').value;
@@ -293,14 +312,14 @@ function loadModels() {
   modelSel.innerHTML='<option value="">Loading…</option>'; modelSel.disabled=true;
   yearSel.innerHTML='<option value="">—</option>'; yearSel.disabled=true;
   if(goBtn) goBtn.disabled=true;
-  if(!make) { modelSel.innerHTML='<option value="">— pick make first —</option>'; return; }
-  fetch('/portal/api/models?make='+encodeURIComponent(make))
-    .then(r=>r.json())
+  if(!make){ modelSel.innerHTML='<option value="">— pick make first —</option>'; return; }
+  wsGet('/models/', 'make='+encodeURIComponent(make))
     .then(function(data){
+      var models = parseNames(data, 'name');
       modelSel.innerHTML='<option value="">— select model —</option>';
-      data.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
+      models.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
       modelSel.disabled=false;
-    });
+    }).catch(function(){ modelSel.innerHTML='<option value="">Error loading models</option>'; });
 }
 
 function loadYears() {
@@ -310,15 +329,16 @@ function loadYears() {
   var goBtn = document.getElementById('ymm-go');
   yearSel.innerHTML='<option value="">Loading…</option>'; yearSel.disabled=true;
   if(goBtn) goBtn.disabled=true;
-  if(!make||!model) { yearSel.innerHTML='<option value="">— pick model first —</option>'; return; }
-  fetch('/portal/api/years?make='+encodeURIComponent(make)+'&model='+encodeURIComponent(model))
-    .then(r=>r.json())
+  if(!make||!model){ yearSel.innerHTML='<option value="">— pick model first —</option>'; return; }
+  wsGet('/years/', 'make='+encodeURIComponent(make)+'&model='+encodeURIComponent(model))
     .then(function(data){
+      var years = parseNames(data, 'year');
+      years.sort(function(a,b){ return b - a; });
       yearSel.innerHTML='<option value="">— select year —</option>';
-      data.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
+      years.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
       yearSel.disabled=false;
       yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
-    });
+    }).catch(function(){ yearSel.innerHTML='<option value="">Error loading years</option>'; });
 }
 
 function setView(v) {
