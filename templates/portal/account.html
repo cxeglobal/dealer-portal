@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Account — CXE Dealer Portal{% endblock %}
+{% block content %}
+<div class="ph"><div><div class="pt">👤 My account</div><div class="ps">{{ dealer.business }}</div></div></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+  <div class="card">
+    <div class="ch"><div class="ct">Profile</div></div>
+    <div style="padding:16px">
+      <form method="post">
+        <input type="hidden" name="action" value="update">
+        <div class="fg"><label class="fl">Business name</label><input class="fi" value="{{ d.business_name }}" disabled style="opacity:.5"></div>
+        <div class="fg"><label class="fl">Email</label><input class="fi" value="{{ d.email }}" disabled style="opacity:.5"></div>
+        <div class="fg"><label class="fl">Contact name</label><input name="contact_name" class="fi" value="{{ d.contact_name or '' }}"></div>
+        <div class="fg"><label class="fl">Phone</label><input name="phone" class="fi" value="{{ d.phone or '' }}"></div>
+        <div class="fg"><label class="fl">Business type</label><input class="fi" value="{{ d.business_type or '' }}" disabled style="opacity:.5"></div>
+        <button type="submit" class="btn btn-p">Save changes</button>
+      </form>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">Change password</div></div>
+    <div style="padding:16px">
+      <form method="post">
+        <input type="hidden" name="action" value="password">
+        <div class="fg"><label class="fl">Current password</label><input name="old_password" type="password" class="fi" required></div>
+        <div class="fg"><label class="fl">New password</label><input name="new_password" type="password" class="fi" required minlength="8"></div>
+        <button type="submit" class="btn btn-p">Update password</button>
+      </form>
+    </div>
+    <div style="padding:0 16px 16px">
+      <div style="margin-top:20px;padding-top:16px;border-top:1px solid #1e2235">
+        <div style="font-size:12px;color:#4a5270;margin-bottom:10px">Account status</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span class="bdg {% if d.status=='Active' %}bg{% else %}ba{% endif %}">{{ d.status }}</span>
+          <span style="font-size:12px;color:#4a5270">Member since {{ d.created_at[:10] if d.created_at else '—' }}</span>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding-top:16px;border-top:1px solid #1e2235">
+        <a href="/portal/logout" style="color:#ef4444;font-size:13px">Sign out of dealer portal →</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

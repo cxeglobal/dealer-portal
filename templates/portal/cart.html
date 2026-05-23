@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% block title %}Cart — CXE Dealer Portal{% endblock %}
+{% block content %}
+<div class="ph">
+  <div><div class="pt">🛒 Cart</div><div class="ps">Review your order before placing</div></div>
+  <div class="btr"><a href="/portal/shop" class="btn">← Continue shopping</a></div>
+</div>
+{% if items %}
+<div style="display:grid;grid-template-columns:1fr 300px;gap:20px;align-items:start">
+  <div>
+    <div class="card">
+      <div class="ch"><div class="ct">{{ items|length }} item{{ 's' if items|length!=1 }}</div></div>
+      <form method="post" action="/portal/cart/update">
+        <table>
+          <thead><tr><th>Product</th><th>Specs</th><th style="width:110px">Qty</th><th>Unit price</th><th>Line total</th><th></th></tr></thead>
+          <tbody>
+          {% for item in items %}
+          <tr>
+            <td>
+              <div style="font-weight:600;color:#e8ecf8">{{ item.name }}</div>
+              <div style="font-size:11px;color:#7c3aed;font-weight:700">{{ item.brand }}</div>
+              {% if item.sku %}<div style="font-size:10px;color:#4a5270;font-family:monospace">{{ item.sku }}</div>{% endif %}
+            </td>
+            <td style="font-size:11px;color:#8892b0">
+              {{ item.diameter or '—' }} · {{ item.width or '—' }}<br>
+              {{ item.bolt_pattern or '' }}{% if item.wheel_offset %} · ET{{ item.wheel_offset }}{% endif %}<br>
+              {{ item.finish or '' }}
+            </td>
+            <td>
+              <input type="number" name="qty_{{ item.id }}" value="{{ item.qty }}" min="1"
+                style="width:70px;padding:6px 8px;font-size:13px;border:1px solid #2a3050;border-radius:6px;background:#0a0c12;color:#e8ecf8;font-family:inherit">
+            </td>
+            <td style="font-weight:600">${{ '%.2f'|format(item.price or 0) }}</td>
+            <td style="font-weight:700;color:#e8ecf8">${{ '%.2f'|format((item.price or 0)*(item.qty or 1)) }}</td>
+            <td>
+              <form method="post" action="/portal/cart/remove/{{ item.id }}" style="display:inline">
+                <button class="btn btn-xs btn-r">✕</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+        <div style="padding:12px 18px;border-top:1px solid #1e2235">
+          <button type="submit" class="btn btn-sm">Update quantities</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div>
+    <div class="card">
+      <div class="ch"><div class="ct">Order summary</div></div>
+      <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#8892b0">Subtotal</span><span>${{ '%.2f'|format(subtotal) }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:13px"><span style="color:#8892b0">Tax (8%)</span><span>${{ '%.2f'|format(tax) }}</span></div>
+        <div style="display:flex;justify-content:space-between;font-size:15px;font-weight:700;border-top:1px solid #1e2235;padding-top:10px"><span>Total</span><span style="color:#e8ecf8">${{ '%.2f'|format(total) }}</span></div>
+        <form method="post" action="/portal/checkout" style="display:flex;flex-direction:column;gap:10px;margin-top:6px">
+          <div>
+            <label style="font-size:11px;color:#8892b0;display:block;margin-bottom:4px;font-weight:600">PO number (optional)</label>
+            <input name="po_number" class="fi" placeholder="e.g. PO-2026-0042">
+          </div>
+          <div>
+            <label style="font-size:11px;color:#8892b0;display:block;margin-bottom:4px;font-weight:600">Notes</label>
+            <textarea name="notes" class="fta" rows="2" placeholder="Any special instructions…"></textarea>
+          </div>
+          <button type="submit" class="btn btn-p" style="width:100%;padding:11px;font-size:14px;font-weight:700">Place order →</button>
+        </form>
+        <div style="font-size:11px;color:#2a3050;text-align:center">Order goes directly to CXE Global for fulfillment</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="empty">
+  <div class="empty-icon">🛒</div>
+  <div class="empty-title">Your cart is empty</div>
+  <div class="empty-sub"><a href="/portal/shop" style="color:#7c3aed">Browse the shop →</a></div>
+</div>
+{% endif %}
+{% endblock %}

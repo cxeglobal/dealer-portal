@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply for dealer access — CXE Dealer Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:#0a0c12;color:#e8ecf8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.box{width:100%;max-width:520px;background:#0d1018;border:1px solid #1e2235;border-radius:16px;padding:36px}
+.logo{font-size:15px;font-weight:700;color:#fff;margin-bottom:24px}.logo span{color:#7c3aed}
+h2{font-size:20px;font-weight:700;margin-bottom:6px}
+.sub{font-size:13px;color:#4a5270;margin-bottom:24px;line-height:1.5}
+.fr2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.fg{margin-bottom:14px}
+.fl{font-size:12px;color:#8892b0;margin-bottom:5px;display:block;font-weight:600}
+.fi,.fs{width:100%;padding:9px 12px;border-radius:7px;border:1px solid #2a3050;background:#0a0c12;color:#e8ecf8;font-size:13px;font-family:inherit;outline:none;transition:border .12s}
+.fi:focus,.fs:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.btn{width:100%;padding:11px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px}
+.btn:hover{background:#6d28d9}
+.back{text-align:center;margin-top:14px;font-size:13px;color:#4a5270}
+.back a{color:#7c3aed}
+.flash{padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:13px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171}
+@media(max-width:600px){.fr2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="box">
+  <div class="logo"><span>CXE</span> Dealer Portal</div>
+  <h2>Apply for dealer access</h2>
+  <div class="sub">CXE Global reviews all applications. You'll receive an email within 1 business day.</div>
+  {% with messages = get_flashed_messages() %}{% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}{% endwith %}
+  <form method="post">
+    <div class="fr2">
+      <div class="fg"><label class="fl">Business name *</label><input name="business_name" class="fi" required placeholder="Dave's Auto Parts"></div>
+      <div class="fg"><label class="fl">Business type</label>
+        <select name="business_type" class="fs">
+          <option>Auto parts retailer</option>
+          <option>Wheel & tire shop</option>
+          <option>Online reseller</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="fr2">
+      <div class="fg"><label class="fl">Contact name *</label><input name="contact_name" class="fi" required placeholder="Dave Miller"></div>
+      <div class="fg"><label class="fl">Phone</label><input name="phone" class="fi" placeholder="+1 (555) 000-0000"></div>
+    </div>
+    <div class="fg"><label class="fl">Email *</label><input name="email" type="email" class="fi" required placeholder="dave@davesauto.com"></div>
+    <div class="fg"><label class="fl">Password *</label><input name="password" type="password" class="fi" required placeholder="Minimum 8 characters" minlength="8"></div>
+    <div class="fg"><label class="fl">Expected monthly volume</label>
+      <select name="monthly_volume" class="fs">
+        <option>Under $5,000</option>
+        <option>$5,000 – $20,000</option>
+        <option>$20,000 – $50,000</option>
+        <option>Over $50,000</option>
+      </select>
+    </div>
+    <button type="submit" class="btn">Submit application</button>
+  </form>
+  <div class="back"><a href="/portal/login">← Back to sign in</a></div>
+</div>
+</body>
+</html>

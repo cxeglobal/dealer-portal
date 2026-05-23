@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Invoices — CXE Dealer Portal{% endblock %}
+{% block content %}
+<div class="ph">
+  <div><div class="pt">🧾 Invoices</div><div class="ps">Invoices from CXE Global for {{ dealer.business }}</div></div>
+</div>
+<div class="sg">
+  <div class="sc sc-red"><div class="sl">Outstanding</div><div class="sv">${{ '{:,.0f}'.format(outstanding) }}</div><div class="sc2">unpaid balance</div></div>
+  <div class="sc sc-blue"><div class="sl">Total invoices</div><div class="sv">{{ invoices|length }}</div></div>
+</div>
+<div class="card">
+  <div class="ch"><div class="ct">All invoices</div></div>
+  <table>
+    <thead><tr><th>Invoice</th><th>Amount</th><th>Due</th><th>Status</th><th>Date</th></tr></thead>
+    <tbody>
+    {% for inv in invoices %}
+    <tr>
+      <td style="font-weight:600;color:#a78bfa">{{ inv.invoice_number or inv.id }}</td>
+      <td style="font-weight:700">${{ '%.2f'|format(inv.total or 0) }}</td>
+      <td style="font-weight:600;color:#e8ecf8">${{ '%.2f'|format(inv.amount_due or 0) }}</td>
+      <td>
+        {% if inv.status=='Paid' %}<span class="bdg bg">Paid</span>
+        {% elif inv.status=='Partial' %}<span class="bdg ba">Partial</span>
+        {% elif inv.status in ('Posted','Draft') %}<span class="bdg bb">{{ inv.status }}</span>
+        {% else %}<span class="bdg bgr">{{ inv.status }}</span>{% endif %}
+      </td>
+      <td style="font-size:11px;color:#4a5270">{{ inv.created_at[:10] if inv.created_at else '—' }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="empty"><div class="empty-icon">🧾</div><div class="empty-title">No invoices yet</div><div class="empty-sub">Invoices will appear here after CXE processes your orders</div></td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

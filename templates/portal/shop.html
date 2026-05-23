@@ -1,0 +1,352 @@
+{% extends "base.html" %}
+{% block title %}Shop — CXE Dealer Portal{% endblock %}
+{% block head %}
+<style>
+.shop-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
+.sidebar{background:#0d1018;border:1px solid #1e2235;border-radius:12px;padding:16px;position:sticky;top:66px}
+.sb-title{font-size:10px;font-weight:800;color:#4a5270;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:14px}
+.sb-title:first-child{margin-top:0}
+.filter-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
+.fc{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #2a3050;color:#8892b0;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit}
+.fc:hover{border-color:#7c3aed;color:#a78bfa}
+.fc.sel{background:#1a1035;border-color:#7c3aed;color:#a78bfa}
+.sb-check{display:flex;align-items:center;gap:7px;font-size:12px;color:#8892b0;cursor:pointer;padding:3px 0}
+.sb-check input{accent-color:#7c3aed}
+.price-row{display:flex;gap:6px;align-items:center;margin-top:4px}
+.price-row input{width:80px;padding:5px 8px;font-size:12px;border:1px solid #2a3050;border-radius:6px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
+.price-row span{color:#4a5270;font-size:12px}
+.clear-filters{width:100%;margin-top:14px;padding:7px;font-size:12px;border:1px solid #2a3050;border-radius:6px;background:transparent;color:#4a5270;cursor:pointer;font-family:inherit}
+.clear-filters:hover{color:#e8ecf8;border-color:#3a4070}
+
+.ymm-bar{background:#0d1018;border:1px solid #1e2235;border-radius:12px;padding:16px;margin-bottom:16px}
+.ymm-label{font-size:11px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ymm-selects{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end}
+.ymm-selects select{padding:8px 10px;font-size:13px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none;transition:border .12s;width:100%}
+.ymm-selects select:focus{border-color:#7c3aed}
+.ymm-selects select:disabled{opacity:.4;cursor:not-allowed}
+.ymm-badge{display:inline-flex;align-items:center;gap:8px;background:#1a1035;border:1px solid #7c3aed;border-radius:99px;padding:5px 14px;font-size:12px;color:#a78bfa;margin-bottom:12px;font-weight:600}
+.ymm-badge a{color:#4a5270;margin-left:4px;font-size:13px}
+.ymm-badge a:hover{color:#ef4444}
+.ymm-fitment{background:#0a0c12;border:1px solid #1e2235;border-radius:8px;padding:10px 14px;font-size:12px;color:#8892b0;margin-top:8px;line-height:1.7}
+.ymm-fitment strong{color:#e8ecf8}
+
+.toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.search-wrap{flex:1;position:relative;min-width:200px}
+.search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;opacity:.4}
+.search-wrap input{width:100%;padding:8px 10px 8px 32px;font-size:13px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
+.search-wrap input:focus{border-color:#7c3aed}
+.sort-sel{padding:8px 10px;font-size:12px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
+.view-toggle{display:flex;border:1px solid #2a3050;border-radius:7px;overflow:hidden}
+.vt-btn{padding:7px 11px;background:transparent;border:none;cursor:pointer;color:#4a5270;font-size:14px}
+.vt-btn.active{background:#1c2035;color:#e8ecf8}
+.results-meta{font-size:12px;color:#4a5270;margin-bottom:12px}
+.results-meta strong{color:#e8ecf8}
+
+.grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.prod-card{background:#0d1018;border:1px solid #1e2235;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.prod-card:hover{border-color:#3a4070}
+.prod-img{height:120px;background:#13161f;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid #1e2235}
+.fit-badge{position:absolute;top:7px;left:7px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:#10b981;color:#fff;letter-spacing:.03em}
+.stock-badge{position:absolute;top:7px;right:7px}
+.prod-body{padding:10px 12px}
+.prod-brand{font-size:9px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
+.prod-name{font-size:13px;font-weight:600;color:#e8ecf8;margin-bottom:3px;line-height:1.3}
+.prod-spec{font-size:10px;color:#4a5270;margin-bottom:7px;line-height:1.5}
+.prod-footer{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.prod-price{font-size:14px;font-weight:700;color:#e8ecf8}
+.add-btn{width:100%;padding:7px;background:#1a1035;color:#a78bfa;border:1px solid #7c3aed;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;font-weight:600}
+.add-btn:hover{background:#7c3aed;color:#fff}
+.add-btn:disabled{background:#13161f;color:#2a3050;border-color:#1e2235;cursor:not-allowed}
+
+.list-view{display:flex;flex-direction:column;gap:0}
+.list-hdr{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:9px 14px;background:#0d1018;border:1px solid #1e2235;border-radius:8px 8px 0 0;font-size:10px;font-weight:700;color:#4a5270;text-transform:uppercase;letter-spacing:.06em}
+.list-row{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:10px 14px;border:1px solid #1e2235;border-top:none;font-size:12px;align-items:center;background:#0a0c12}
+.list-row:last-child{border-radius:0 0 8px 8px}
+.list-row:hover{background:#0d1018}
+.hidden{display:none!important}
+</style>
+{% endblock %}
+{% block content %}
+<div class="ph">
+  <div><div class="pt">🛞 Shop</div><div class="ps">Live inventory · dealer pricing · instant ordering</div></div>
+</div>
+
+<div class="ymm-bar">
+  <div class="ymm-label">🚗 Search by vehicle — find confirmed-fit wheels</div>
+  {% if ymm_year and ymm_make and ymm_model %}
+  <div class="ymm-badge">
+    {{ ymm_year }} {{ ymm_make }} {{ ymm_model }}
+    <a href="/portal/shop/clear-ymm" title="Clear vehicle">✕</a>
+  </div>
+  {% if ymm_fitment %}
+  <div class="ymm-fitment">
+    <strong>Bolt pattern:</strong> {{ ymm_bolt or '—' }} &nbsp;·&nbsp;
+    <strong>Showing:</strong> {{ products|length }} confirmed-fit wheels &nbsp;·&nbsp;
+    <span style="color:#7c3aed">Powered by WheelSize API</span>
+  </div>
+  {% endif %}
+  {% else %}
+  <form method="get" id="ymm-form">
+    <div class="ymm-selects">
+      <div>
+        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Make</label>
+        <select id="ymm-make" name="make" onchange="loadModels()" disabled>
+          <option value="">Loading…</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Model</label>
+        <select id="ymm-model" name="model" onchange="loadYears()" disabled>
+          <option value="">— pick make first —</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Year</label>
+        <select id="ymm-year" name="year" disabled>
+          <option value="">— pick model first —</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-p" id="ymm-go" disabled style="height:37px;white-space:nowrap">Find wheels</button>
+    </div>
+  </form>
+  <div style="margin-top:8px;font-size:11px;color:#2a3050">Fitment data powered by WheelSize API — covers 2000–2026 vehicles</div>
+  {% endif %}
+</div>
+
+<div class="shop-layout">
+  <form method="get" id="filter-form">
+    {% if ymm_year %}<input type="hidden" name="year" value="{{ ymm_year }}">{% endif %}
+    {% if ymm_make %}<input type="hidden" name="make" value="{{ ymm_make }}">{% endif %}
+    {% if ymm_model %}<input type="hidden" name="model" value="{{ ymm_model }}">{% endif %}
+    <div class="sidebar">
+      <label class="sb-check"><input type="checkbox" name="instock" value="1" {% if instock_f %}checked{% endif %} onchange="document.getElementById('filter-form').submit()"> In stock only</label>
+
+      <div class="sb-title">Brand</div>
+      <div class="filter-chips">
+        {% for b in brands %}
+        <button type="submit" name="brand" value="{{ b }}" class="fc {% if brand_f==b %}sel{% endif %}">{{ b }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="sb-title">Diameter</div>
+      <div class="filter-chips">
+        {% for d in dias %}
+        <button type="submit" name="diameter" value="{{ d }}" class="fc {% if dia_f==d %}sel{% endif %}">{{ d }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="sb-title">Width</div>
+      <div class="filter-chips">
+        {% for w in widths %}
+        <button type="submit" name="width" value="{{ w }}" class="fc {% if width_f==w %}sel{% endif %}">{{ w }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="sb-title">Bolt pattern</div>
+      <div class="filter-chips">
+        {% for b in bolts %}
+        <button type="submit" name="bolt_pattern" value="{{ b }}" class="fc {% if bolt_f==b %}sel{% endif %}">{{ b }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="sb-title">Finish</div>
+      <div class="filter-chips">
+        {% for f in finishes %}
+        <button type="submit" name="finish" value="{{ f }}" class="fc {% if finish_f==f %}sel{% endif %}">{{ f }}</button>
+        {% endfor %}
+      </div>
+
+      <div class="sb-title">Price range</div>
+      <div class="price-row">
+        <input type="number" name="pmin" value="{{ pmin_f }}" placeholder="$0" min="0">
+        <span>—</span>
+        <input type="number" name="pmax" value="{{ pmax_f }}" placeholder="Any" min="0">
+        <button type="submit" class="btn btn-sm btn-p" style="padding:5px 10px;font-size:11px">Go</button>
+      </div>
+
+      <button type="button" class="clear-filters" onclick="window.location='/portal/shop{% if ymm_year %}?year={{ ymm_year }}&make={{ ymm_make }}&model={{ ymm_model }}{% endif %}'">Clear all filters</button>
+    </div>
+  </form>
+
+  <div>
+    <div class="toolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="6.5" r="5"/><path d="M10.5 10.5L14 14"/></svg>
+        <input type="text" id="search-box" placeholder="Search name, SKU, bolt pattern…" value="{{ q }}" oninput="doSearch(this.value)">
+      </div>
+      <select class="sort-sel" id="sort-sel" onchange="doSort(this.value)">
+        <option value="name" {% if sort=='name' %}selected{% endif %}>Sort: name</option>
+        <option value="price-asc" {% if sort=='price-asc' %}selected{% endif %}>Price: low → high</option>
+        <option value="price-desc" {% if sort=='price-desc' %}selected{% endif %}>Price: high → low</option>
+        <option value="stock" {% if sort=='stock' %}selected{% endif %}>In stock first</option>
+      </select>
+      <div class="view-toggle">
+        <button class="vt-btn active" id="btn-grid" onclick="setView('grid')" title="Grid view">▦</button>
+        <button class="vt-btn" id="btn-list" onclick="setView('list')" title="List view">☰</button>
+      </div>
+    </div>
+
+    <div class="results-meta">Showing <strong>{{ products|length }}</strong> products{% if ymm_year %} for <strong>{{ ymm_year }} {{ ymm_make }} {{ ymm_model }}</strong>{% endif %}</div>
+
+    <div class="grid-view" id="grid-view">
+      {% for p in products %}
+      <div class="prod-card">
+        <div class="prod-img">
+          <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="22" stroke="#2a3050" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="9" stroke="#2a3050" stroke-width="2"/>
+            <circle cx="24" cy="24" r="2.5" fill="#2a3050"/>
+            <line x1="24" y1="15" x2="24" y2="4" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="32.6" y1="19.5" x2="41.1" y2="14.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="32.6" y1="28.5" x2="41.1" y2="33.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="24" y1="33" x2="24" y2="44" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="15.4" y1="28.5" x2="6.9" y2="33.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+            <line x1="15.4" y1="19.5" x2="6.9" y2="14.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
+          </svg>
+          {% if ymm_year %}<div class="fit-badge">Confirmed fit</div>{% endif %}
+          <div class="stock-badge">
+            {% if p.stock_qty == 0 %}<span class="bdg br2" style="font-size:9px">Out</span>
+            {% elif p.stock_qty <= (p.low_stock_threshold or 5) %}<span class="bdg ba" style="font-size:9px">{{ p.stock_qty }} left</span>
+            {% else %}<span class="bdg bg" style="font-size:9px">{{ p.stock_qty }}</span>{% endif %}
+          </div>
+        </div>
+        <div class="prod-body">
+          <div class="prod-brand">{{ p.brand or '' }}</div>
+          <div class="prod-name">{{ p.name }}</div>
+          <div class="prod-spec">{{ p.diameter or '—' }} · {{ p.width or '—' }} · {{ p.bolt_pattern or '—' }}<br>{{ p.finish or '' }}{% if p.wheel_offset %} · ET{{ p.wheel_offset }}{% endif %}</div>
+          <div class="prod-footer">
+            <div class="prod-price">${{ '%.2f'|format(p.dealer_price or 0) }}</div>
+          </div>
+          <form method="post" action="/portal/cart/add">
+            <input type="hidden" name="product_id" value="{{ p.id }}">
+            <input type="hidden" name="qty" value="1">
+            <button class="add-btn" {% if p.stock_qty == 0 %}disabled{% endif %}>
+              {% if p.stock_qty == 0 %}Out of stock{% else %}+ Add to cart{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="empty" style="grid-column:1/-1">
+        <div class="empty-icon">🛞</div>
+        <div class="empty-title">No products found</div>
+        <div class="empty-sub">Try adjusting your filters or <a href="/portal/shop" style="color:#7c3aed">clear all</a></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="list-view hidden" id="list-view">
+      <div class="list-hdr"><div></div><div>Product</div><div>Size</div><div>Bolt</div><div>Finish</div><div>Stock</div><div>Price</div><div></div></div>
+      {% for p in products %}
+      <div class="list-row">
+        <div>
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#2a3050" stroke-width="2.5"/><circle cx="24" cy="24" r="8" stroke="#2a3050" stroke-width="2"/><circle cx="24" cy="24" r="2.5" fill="#2a3050"/></svg>
+        </div>
+        <div>
+          <div style="font-weight:600;color:#e8ecf8">{{ p.name }}</div>
+          <div style="font-size:10px;color:#7c3aed;font-weight:700">{{ p.brand }}</div>
+        </div>
+        <div style="color:#8892b0">{{ p.diameter or '—' }} × {{ p.width or '—' }}</div>
+        <div><span class="bdg bgr" style="font-size:10px">{{ p.bolt_pattern or '—' }}</span></div>
+        <div style="color:#8892b0;font-size:11px">{{ p.finish or '—' }}</div>
+        <div>
+          {% if p.stock_qty == 0 %}<span class="bdg br2">Out</span>
+          {% elif p.stock_qty <= (p.low_stock_threshold or 5) %}<span class="bdg ba">{{ p.stock_qty }}</span>
+          {% else %}<span class="bdg bg">{{ p.stock_qty }}</span>{% endif %}
+        </div>
+        <div style="font-weight:700;color:#e8ecf8">${{ '%.2f'|format(p.dealer_price or 0) }}</div>
+        <div>
+          <form method="post" action="/portal/cart/add" style="display:inline">
+            <input type="hidden" name="product_id" value="{{ p.id }}">
+            <input type="hidden" name="qty" value="1">
+            <button class="btn btn-sm btn-p" {% if p.stock_qty == 0 %}disabled{% endif %}>+ Add</button>
+          </form>
+        </div>
+      </div>
+      {% else %}
+      <div class="list-row" style="grid-column:1/-1;text-align:center;color:#4a5270;padding:32px">No products found</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+var _makes = [], _models = [], _years = [];
+
+// Load makes on page load
+fetch('/portal/api/makes')
+  .then(r=>r.json())
+  .then(function(data){
+    _makes = data;
+    var sel = document.getElementById('ymm-make');
+    if(!sel) return;
+    sel.innerHTML = '<option value="">— select make —</option>';
+    data.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o); });
+    sel.disabled = false;
+  }).catch(function(){ if(document.getElementById('ymm-make')) document.getElementById('ymm-make').innerHTML='<option value="">API unavailable</option>'; });
+
+function loadModels() {
+  var make = document.getElementById('ymm-make').value;
+  var modelSel = document.getElementById('ymm-model');
+  var yearSel = document.getElementById('ymm-year');
+  var goBtn = document.getElementById('ymm-go');
+  modelSel.innerHTML='<option value="">Loading…</option>'; modelSel.disabled=true;
+  yearSel.innerHTML='<option value="">—</option>'; yearSel.disabled=true;
+  if(goBtn) goBtn.disabled=true;
+  if(!make) { modelSel.innerHTML='<option value="">— pick make first —</option>'; return; }
+  fetch('/portal/api/models?make='+encodeURIComponent(make))
+    .then(r=>r.json())
+    .then(function(data){
+      modelSel.innerHTML='<option value="">— select model —</option>';
+      data.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
+      modelSel.disabled=false;
+    });
+}
+
+function loadYears() {
+  var make = document.getElementById('ymm-make').value;
+  var model = document.getElementById('ymm-model').value;
+  var yearSel = document.getElementById('ymm-year');
+  var goBtn = document.getElementById('ymm-go');
+  yearSel.innerHTML='<option value="">Loading…</option>'; yearSel.disabled=true;
+  if(goBtn) goBtn.disabled=true;
+  if(!make||!model) { yearSel.innerHTML='<option value="">— pick model first —</option>'; return; }
+  fetch('/portal/api/years?make='+encodeURIComponent(make)+'&model='+encodeURIComponent(model))
+    .then(r=>r.json())
+    .then(function(data){
+      yearSel.innerHTML='<option value="">— select year —</option>';
+      data.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
+      yearSel.disabled=false;
+      yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
+    });
+}
+
+function setView(v) {
+  document.getElementById('grid-view').classList.toggle('hidden', v!=='grid');
+  document.getElementById('list-view').classList.toggle('hidden', v!=='list');
+  document.getElementById('btn-grid').classList.toggle('active', v==='grid');
+  document.getElementById('btn-list').classList.toggle('active', v==='list');
+  localStorage.setItem('portal-view', v);
+}
+
+function doSearch(q) {
+  clearTimeout(window._st);
+  window._st = setTimeout(function(){
+    var url = new URL(window.location);
+    if(q) url.searchParams.set('q',q); else url.searchParams.delete('q');
+    window.location = url;
+  }, 600);
+}
+
+function doSort(s) {
+  var url = new URL(window.location);
+  url.searchParams.set('sort', s);
+  window.location = url;
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  var v = localStorage.getItem('portal-view') || 'grid';
+  setView(v);
+});
+</script>
+{% endblock %}

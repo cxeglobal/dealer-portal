@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in — CXE Dealer Portal</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:#0a0c12;color:#e8ecf8;min-height:100vh;display:grid;grid-template-columns:1fr 1fr}
+.left{background:#0d1018;border-right:1px solid #1e2235;padding:48px;display:flex;flex-direction:column;justify-content:space-between}
+.logo{font-size:18px;font-weight:800;color:#fff;margin-bottom:48px}.logo span{color:#7c3aed}
+.hero-title{font-size:32px;font-weight:800;line-height:1.15;color:#fff;margin-bottom:12px}
+.hero-title em{color:#7c3aed;font-style:normal}
+.hero-sub{font-size:14px;color:#8892b0;margin-bottom:32px;line-height:1.6}
+.feature{display:flex;align-items:center;gap:10px;font-size:13px;color:#8892b0;margin-bottom:10px}
+.feature-dot{width:6px;height:6px;border-radius:50%;background:#7c3aed;flex-shrink:0}
+.wheel-row{display:flex;gap:-10px;margin-top:32px}
+.right{padding:48px;display:flex;align-items:center;justify-content:center}
+.form-box{width:100%;max-width:380px}
+.form-title{font-size:20px;font-weight:700;color:#e8ecf8;margin-bottom:6px}
+.form-sub{font-size:13px;color:#4a5270;margin-bottom:28px}
+.fg{margin-bottom:16px}
+.fl{font-size:12px;color:#8892b0;margin-bottom:5px;display:block;font-weight:600}
+.fi{width:100%;padding:10px 14px;border-radius:8px;border:1px solid #2a3050;background:#0d1018;color:#e8ecf8;font-size:13px;font-family:inherit;outline:none;transition:border .12s}
+.fi:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.15)}
+.btn{width:100%;padding:11px;border-radius:8px;border:none;background:#7c3aed;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;transition:background .15s}
+.btn:hover{background:#6d28d9}
+.link{text-align:center;margin-top:16px;font-size:13px;color:#4a5270}
+.link a{color:#7c3aed;font-weight:600}
+.link a:hover{text-decoration:underline}
+.flash{padding:10px 14px;border-radius:8px;margin-bottom:16px;font-size:13px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#f87171}
+@media(max-width:768px){body{grid-template-columns:1fr}.left{display:none}.right{padding:32px 20px}}
+</style>
+</head>
+<body>
+<div class="left">
+  <div>
+    <div class="logo"><span>CXE</span> Dealer Portal</div>
+    <div class="hero-title">Your wholesale<br>wheel <em>hub</em></div>
+    <div class="hero-sub">Browse live inventory, check real-time stock,<br>place orders and manage invoices — all in one place.</div>
+    <div class="feature"><div class="feature-dot"></div>Live inventory from CXE Global</div>
+    <div class="feature"><div class="feature-dot"></div>Dealer-exclusive pricing</div>
+    <div class="feature"><div class="feature-dot"></div>YMM fitment search powered by WheelSize API</div>
+    <div class="feature"><div class="feature-dot"></div>Instant order confirmation</div>
+    <div class="feature"><div class="feature-dot"></div>View and download invoices</div>
+  </div>
+  <div style="font-size:11px;color:#2a3050">© 2026 CXE Global · dealers.cxeglobal.com</div>
+</div>
+<div class="right">
+  <div class="form-box">
+    <div class="form-title">Sign in to your account</div>
+    <div class="form-sub">Approved dealers only</div>
+    {% with messages = get_flashed_messages() %}{% if messages %}{% for m in messages %}<div class="flash">{{ m }}</div>{% endfor %}{% endif %}{% endwith %}
+    <form method="post">
+      <div class="fg"><label class="fl">Email</label><input name="email" type="email" class="fi" placeholder="dealer@company.com" required autocomplete="email"></div>
+      <div class="fg"><label class="fl">Password</label><input name="password" type="password" class="fi" placeholder="••••••••" required autocomplete="current-password"></div>
+      <button type="submit" class="btn">Sign in</button>
+    </form>
+    <div class="link">New dealer? <a href="/portal/register">Apply for access →</a></div>
+  </div>
+</div>
+</body>
+</html>
