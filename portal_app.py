@@ -466,9 +466,9 @@ def portal_orders():
     # Parse items_json for each order
     for o in orders:
         try:
-            o['items'] = json.loads(o.get('items_json','[]') or '[]')
+            o['order_items'] = json.loads(o.get('items_json','[]') or '[]')
         except:
-            o['items'] = []
+            o['order_items'] = []
     cart_count = sum(v.get('qty',0) for v in session.get('cart',{}).values())
     return render_template('orders.html',
         orders=orders, total_spend=total_spend, pending_count=pending_count,
