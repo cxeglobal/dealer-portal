@@ -89,21 +89,22 @@
   <form method="get" id="ymm-form">
     <div class="ymm-selects">
       <div>
+        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Year</label>
+        <select id="ymm-year-first" name="year" onchange="loadMakes()" >
+          <option value="">— select year —</option>
+          {% for y in range(2026, 1999, -1) %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
+        </select>
+      </div>
+      <div>
         <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Make</label>
         <select id="ymm-make" name="make" onchange="loadModels()" disabled>
-          <option value="">Loading…</option>
+          <option value="">— pick year first —</option>
         </select>
       </div>
       <div>
         <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Model</label>
-        <select id="ymm-model" name="model" onchange="loadYears()" disabled>
+        <select id="ymm-model" name="model" disabled>
           <option value="">— pick make first —</option>
-        </select>
-      </div>
-      <div>
-        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Year</label>
-        <select id="ymm-year" name="year" disabled>
-          <option value="">— pick model first —</option>
         </select>
       </div>
       <button type="submit" class="btn btn-p" id="ymm-go" disabled style="height:37px;white-space:nowrap">Find wheels</button>
@@ -339,62 +340,46 @@ function populateMakes(makes) {
   sel.disabled = false;
 }
 
-// Try live API first, fall back to hardcoded list
-wsGet('/makes/')
-  .then(function(data){
-    var makes = parseNames(data, 'name');
-    if (makes.length > 0) { populateMakes(makes); }
-    else { populateMakes(FALLBACK_MAKES); }
-  }).catch(function(){
-    populateMakes(FALLBACK_MAKES);
-  });
+// Year is static — when year selected, load makes
+function loadMakes() {
+  var year = document.getElementById('ymm-year-first').value;
+  var makeSel = document.getElementById('ymm-make');
+  var modelSel = document.getElementById('ymm-model');
+  var goBtn = document.getElementById('ymm-go');
+  makeSel.innerHTML='<option value="">Loading…</option>'; makeSel.disabled=true;
+  modelSel.innerHTML='<option value="">— pick make first —</option>'; modelSel.disabled=true;
+  if(goBtn) goBtn.disabled=true;
+  if(!year){ makeSel.innerHTML='<option value="">— pick year first —</option>'; return; }
+  wsGet('/makes/')
+    .then(function(data){
+      var makes = parseNames(data, 'name');
+      if(makes.length === 0) makes = FALLBACK_MAKES;
+      populateMakes(makes);
+    }).catch(function(){ populateMakes(FALLBACK_MAKES); });
+}
 
 function loadModels() {
   var make = document.getElementById('ymm-make').value;
   var modelSel = document.getElementById('ymm-model');
-  var yearSel = document.getElementById('ymm-year');
   var goBtn = document.getElementById('ymm-go');
   modelSel.innerHTML='<option value="">Loading…</option>'; modelSel.disabled=true;
-  yearSel.innerHTML='<option value="">—</option>'; yearSel.disabled=true;
   if(goBtn) goBtn.disabled=true;
   if(!make){ modelSel.innerHTML='<option value="">— pick make first —</option>'; return; }
-  wsGet('/models/', 'make='+encodeURIComponent(make))
+  var year = document.getElementById('ymm-year-first').value;
+  wsGet('/models/', 'make='+encodeURIComponent(make)+(year?'&year='+year:''))
     .then(function(data){
       var models = parseNames(data, 'name');
-      if (models.length === 0 && FALLBACK_MODELS[make]) models = FALLBACK_MODELS[make];
+      if(models.length === 0 && FALLBACK_MODELS[make]) models = FALLBACK_MODELS[make];
       modelSel.innerHTML='<option value="">— select model —</option>';
       models.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
       modelSel.disabled=false;
+      modelSel.onchange=function(){ if(goBtn&&modelSel.value) goBtn.disabled=false; };
     }).catch(function(){
       var models = FALLBACK_MODELS[make] || [];
       modelSel.innerHTML='<option value="">— select model —</option>';
       models.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
-      modelSel.disabled = models.length > 0;
-    });
-}
-
-function loadYears() {
-  var make = document.getElementById('ymm-make').value;
-  var model = document.getElementById('ymm-model').value;
-  var yearSel = document.getElementById('ymm-year');
-  var goBtn = document.getElementById('ymm-go');
-  yearSel.innerHTML='<option value="">Loading…</option>'; yearSel.disabled=true;
-  if(goBtn) goBtn.disabled=true;
-  if(!make||!model){ yearSel.innerHTML='<option value="">— pick model first —</option>'; return; }
-  wsGet('/years/', 'make='+encodeURIComponent(make)+'&model='+encodeURIComponent(model))
-    .then(function(data){
-      var years = parseNames(data, 'year');
-      if (years.length === 0) years = FALLBACK_YEARS;
-      else years.sort(function(a,b){ return b - a; });
-      yearSel.innerHTML='<option value="">— select year —</option>';
-      years.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
-      yearSel.disabled=false;
-      yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
-    }).catch(function(){
-      yearSel.innerHTML='<option value="">— select year —</option>';
-      FALLBACK_YEARS.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
-      yearSel.disabled=false;
-      yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
+      modelSel.disabled = models.length === 0;
+      modelSel.onchange=function(){ if(goBtn&&modelSel.value) goBtn.disabled=false; };
     });
 }
 
