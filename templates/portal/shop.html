@@ -274,6 +274,48 @@
 var WS_KEY = 'ec8f53e4a758566f89605631bb5a5fe3';
 var WS_BASE = 'https://api.wheel-size.com/v2';
 
+// Fallback makes list in case API is blocked
+var FALLBACK_MAKES = ['Acura','Audi','BMW','Buick','Cadillac','Chevrolet','Chrysler','Dodge',
+  'Ferrari','Ford','GMC','Honda','Hyundai','Infiniti','Jeep','Kia','Land Rover','Lexus',
+  'Lincoln','Mazda','Mercedes-Benz','Mitsubishi','Nissan','Porsche','RAM','Subaru',
+  'Tesla','Toyota','Volkswagen','Volvo'];
+
+var FALLBACK_MODELS = {
+  'Ford': ['F-150','F-250','F-350','Mustang','Explorer','Expedition','Edge','Escape','Bronco','Ranger'],
+  'Chevrolet': ['Silverado 1500','Silverado 2500','Tahoe','Suburban','Camaro','Corvette','Colorado','Equinox','Traverse'],
+  'Toyota': ['Tundra','Tacoma','4Runner','Sequoia','Camry','Corolla','RAV4','Highlander','Land Cruiser'],
+  'Dodge': ['Ram 1500','Ram 2500','Charger','Challenger','Durango','Journey'],
+  'Jeep': ['Wrangler','Gladiator','Grand Cherokee','Cherokee','Compass'],
+  'BMW': ['3 Series','5 Series','7 Series','X3','X5','X6','X7','M3','M5'],
+  'Mercedes-Benz': ['C-Class','E-Class','S-Class','GLE','GLC','G-Class','AMG GT'],
+  'RAM': ['1500','2500','3500'],
+  'GMC': ['Sierra 1500','Sierra 2500','Yukon','Canyon','Terrain'],
+  'Nissan': ['Titan','Frontier','Pathfinder','Murano','Altima','370Z','GT-R'],
+  'Honda': ['Ridgeline','Pilot','CR-V','Accord','Civic','HR-V'],
+  'Audi': ['A3','A4','A6','Q3','Q5','Q7','Q8','R8','TT'],
+  'Hyundai': ['Tucson','Santa Fe','Sonata','Elantra','Palisade'],
+  'Kia': ['Telluride','Sportage','Sorento','Stinger','K5'],
+  'Subaru': ['Outback','Forester','Impreza','WRX','Crosstrek','Ascent'],
+  'Lexus': ['GX','LX','RX','IS','ES','LC','LS'],
+  'Land Rover': ['Defender','Discovery','Range Rover','Range Rover Sport'],
+  'Porsche': ['911','Cayenne','Macan','Panamera','Taycan'],
+  'Tesla': ['Model 3','Model S','Model X','Model Y','Cybertruck'],
+  'Volkswagen': ['Golf','GTI','Jetta','Passat','Tiguan','Atlas','ID.4'],
+  'Mazda': ['CX-5','CX-9','MX-5 Miata','3','6'],
+  'Acura': ['MDX','RDX','TLX','NSX','Integra'],
+  'Infiniti': ['QX80','QX60','QX55','Q50','Q60'],
+  'Cadillac': ['Escalade','CT5','CT4','XT5','XT6'],
+  'Buick': ['Enclave','Encore','Envision','LaCrosse'],
+  'Chrysler': ['300','Pacifica','Voyager'],
+  'Lincoln': ['Navigator','Aviator','Corsair','Nautilus'],
+  'Mitsubishi': ['Outlander','Eclipse Cross','Galant'],
+  'Volvo': ['XC90','XC60','XC40','S60','V90'],
+  'Ferrari': ['488','F8','SF90','Roma','Portofino'],
+};
+
+var FALLBACK_YEARS = [];
+for (var y = 2026; y >= 2000; y--) FALLBACK_YEARS.push(String(y));
+
 function wsGet(endpoint, params) {
   var url = WS_BASE + endpoint + '?user_key=' + WS_KEY + '&region=us';
   if (params) url += '&' + params;
@@ -289,19 +331,22 @@ function parseNames(data, field) {
   }).filter(Boolean).sort();
 }
 
-// Load makes on page load
+function populateMakes(makes) {
+  var sel = document.getElementById('ymm-make');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— select make —</option>';
+  makes.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o); });
+  sel.disabled = false;
+}
+
+// Try live API first, fall back to hardcoded list
 wsGet('/makes/')
   .then(function(data){
     var makes = parseNames(data, 'name');
-    var sel = document.getElementById('ymm-make');
-    if(!sel) return;
-    sel.innerHTML = '<option value="">— select make —</option>';
-    makes.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;sel.appendChild(o); });
-    sel.disabled = false;
-  }).catch(function(e){
-    console.log('WheelSize makes error:', e);
-    var sel = document.getElementById('ymm-make');
-    if(sel) sel.innerHTML='<option value="">API unavailable — use filters below</option>';
+    if (makes.length > 0) { populateMakes(makes); }
+    else { populateMakes(FALLBACK_MAKES); }
+  }).catch(function(){
+    populateMakes(FALLBACK_MAKES);
   });
 
 function loadModels() {
@@ -316,10 +361,16 @@ function loadModels() {
   wsGet('/models/', 'make='+encodeURIComponent(make))
     .then(function(data){
       var models = parseNames(data, 'name');
+      if (models.length === 0 && FALLBACK_MODELS[make]) models = FALLBACK_MODELS[make];
       modelSel.innerHTML='<option value="">— select model —</option>';
       models.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
       modelSel.disabled=false;
-    }).catch(function(){ modelSel.innerHTML='<option value="">Error loading models</option>'; });
+    }).catch(function(){
+      var models = FALLBACK_MODELS[make] || [];
+      modelSel.innerHTML='<option value="">— select model —</option>';
+      models.forEach(function(m){ var o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o); });
+      modelSel.disabled = models.length > 0;
+    });
 }
 
 function loadYears() {
@@ -333,12 +384,18 @@ function loadYears() {
   wsGet('/years/', 'make='+encodeURIComponent(make)+'&model='+encodeURIComponent(model))
     .then(function(data){
       var years = parseNames(data, 'year');
-      years.sort(function(a,b){ return b - a; });
+      if (years.length === 0) years = FALLBACK_YEARS;
+      else years.sort(function(a,b){ return b - a; });
       yearSel.innerHTML='<option value="">— select year —</option>';
       years.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
       yearSel.disabled=false;
       yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
-    }).catch(function(){ yearSel.innerHTML='<option value="">Error loading years</option>'; });
+    }).catch(function(){
+      yearSel.innerHTML='<option value="">— select year —</option>';
+      FALLBACK_YEARS.forEach(function(y){ var o=document.createElement('option');o.value=y;o.textContent=y;yearSel.appendChild(o); });
+      yearSel.disabled=false;
+      yearSel.onchange=function(){ if(goBtn&&yearSel.value) goBtn.disabled=false; };
+    });
 }
 
 function setView(v) {
