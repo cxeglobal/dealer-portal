@@ -3,64 +3,65 @@
 {% block head %}
 <style>
 .shop-layout{display:grid;grid-template-columns:220px 1fr;gap:20px;align-items:start}
-.sidebar{background:#0d1018;border:1px solid #1e2235;border-radius:12px;padding:16px;position:sticky;top:66px}
-.sb-title{font-size:10px;font-weight:800;color:#4a5270;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:14px}
+.sidebar{background:#13161f;border:1px solid #e2e5ed;border-radius:12px;padding:16px;position:sticky;top:66px}
+.sb-title{font-size:10px;font-weight:800;color:#6b7280;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;margin-top:14px}
 .sb-title:first-child{margin-top:0}
 .filter-chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px}
-.fc{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #2a3050;color:#8892b0;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit}
-.fc:hover{border-color:#7c3aed;color:#a78bfa}
-.fc.sel{background:#1a1035;border-color:#7c3aed;color:#a78bfa}
-.sb-check{display:flex;align-items:center;gap:7px;font-size:12px;color:#8892b0;cursor:pointer;padding:3px 0}
+.fc{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #e2e5ed;color:#6b7280;cursor:pointer;transition:all .15s;background:transparent;font-family:inherit}
+.fc:hover{border-color:#7c3aed;color:#7c3aed}
+.fc.sel{background:#1a1035;border-color:#7c3aed;color:#7c3aed}
+.sb-check{display:flex;align-items:center;gap:7px;font-size:12px;color:#6b7280;cursor:pointer;padding:3px 0}
 .sb-check input{accent-color:#7c3aed}
 .price-row{display:flex;gap:6px;align-items:center;margin-top:4px}
-.price-row input{width:80px;padding:5px 8px;font-size:12px;border:1px solid #2a3050;border-radius:6px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
-.price-row span{color:#4a5270;font-size:12px}
-.clear-filters{width:100%;margin-top:14px;padding:7px;font-size:12px;border:1px solid #2a3050;border-radius:6px;background:transparent;color:#4a5270;cursor:pointer;font-family:inherit}
-.clear-filters:hover{color:#e8ecf8;border-color:#3a4070}
+.price-row input{width:80px;padding:5px 8px;font-size:12px;border:1px solid #e2e5ed;border-radius:6px;background:#f4f5f7;color:#1a1d2e;font-family:inherit;outline:none}
+.price-row span{color:#6b7280;font-size:12px}
+.clear-filters{width:100%;margin-top:14px;padding:7px;font-size:12px;border:1px solid #e2e5ed;border-radius:6px;background:transparent;color:#6b7280;cursor:pointer;font-family:inherit}
+.clear-filters:hover{color:#1a1d2e;border-color:#3a4070}
 
-.ymm-bar{background:#0d1018;border:1px solid #1e2235;border-radius:12px;padding:16px;margin-bottom:16px}
-.ymm-label{font-size:11px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;display:flex;align-items:center;gap:6px}
-.ymm-selects{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:end}
-.ymm-selects select{padding:8px 10px;font-size:13px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none;transition:border .12s;width:100%}
-.ymm-selects select:focus{border-color:#7c3aed}
-.ymm-selects select:disabled{opacity:.4;cursor:not-allowed}
-.ymm-badge{display:inline-flex;align-items:center;gap:8px;background:#1a1035;border:1px solid #7c3aed;border-radius:99px;padding:5px 14px;font-size:12px;color:#a78bfa;margin-bottom:12px;font-weight:600}
-.ymm-badge a{color:#4a5270;margin-left:4px;font-size:13px}
+.ymm-bar{background:#fff;border:1.5px solid #7c3aed;border-radius:12px;padding:20px;margin-bottom:16px}
+.ymm-label{font-size:11px;font-weight:800;color:#7c3aed;text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.ymm-selects{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:10px;align-items:end}
+.ymm-selects select{padding:10px 12px;font-size:13px;border:1px solid #3a4070;border-radius:7px;background:#fff;color:#1a1d2e;font-family:inherit;outline:none;transition:border .12s;width:100%;cursor:pointer}
+.ymm-selects select:focus{border-color:#7c3aed;box-shadow:0 0 0 3px rgba(124,58,237,.2)}
+.ymm-selects select:disabled{opacity:.5;cursor:not-allowed;background:#0d1018}
+.ymm-selects select option{background:#fff;color:#1a1d2e}
+.ymm-badge{display:inline-flex;align-items:center;gap:8px;background:#ede9fe;border:1px solid #7c3aed;border-radius:99px;padding:5px 14px;font-size:12px;color:#7c3aed;margin-bottom:12px;font-weight:600}
+.ymm-badge a{color:#6b7280;margin-left:4px;font-size:13px}
 .ymm-badge a:hover{color:#ef4444}
-.ymm-fitment{background:#0a0c12;border:1px solid #1e2235;border-radius:8px;padding:10px 14px;font-size:12px;color:#8892b0;margin-top:8px;line-height:1.7}
-.ymm-fitment strong{color:#e8ecf8}
+.ymm-fitment{background:#f4f5f7;border:1px solid #e2e5ed;border-radius:8px;padding:10px 14px;font-size:12px;color:#6b7280;margin-top:8px;line-height:1.7}
+.ymm-fitment strong{color:#1a1d2e}
 
 .toolbar{display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap}
 .search-wrap{flex:1;position:relative;min-width:200px}
 .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);width:14px;height:14px;opacity:.4}
-.search-wrap input{width:100%;padding:8px 10px 8px 32px;font-size:13px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
+.search-wrap input{width:100%;padding:8px 10px 8px 32px;font-size:13px;border:1px solid #e2e5ed;border-radius:7px;background:#f4f5f7;color:#1a1d2e;font-family:inherit;outline:none}
 .search-wrap input:focus{border-color:#7c3aed}
-.sort-sel{padding:8px 10px;font-size:12px;border:1px solid #2a3050;border-radius:7px;background:#0a0c12;color:#e8ecf8;font-family:inherit;outline:none}
-.view-toggle{display:flex;border:1px solid #2a3050;border-radius:7px;overflow:hidden}
-.vt-btn{padding:7px 11px;background:transparent;border:none;cursor:pointer;color:#4a5270;font-size:14px}
-.vt-btn.active{background:#1c2035;color:#e8ecf8}
-.results-meta{font-size:12px;color:#4a5270;margin-bottom:12px}
-.results-meta strong{color:#e8ecf8}
+.sort-sel{padding:8px 10px;font-size:12px;border:1px solid #e2e5ed;border-radius:7px;background:#f4f5f7;color:#1a1d2e;font-family:inherit;outline:none}
+.view-toggle{display:flex;border:1px solid #e2e5ed;border-radius:7px;overflow:hidden}
+.vt-btn{padding:7px 11px;background:transparent;border:none;cursor:pointer;color:#6b7280;font-size:14px}
+.vt-btn.active{background:#fff;color:#1a1d2e}
+.results-meta{font-size:12px;color:#6b7280;margin-bottom:12px}
+.results-meta strong{color:#1a1d2e}
 
 .grid-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.prod-card{background:#0d1018;border:1px solid #1e2235;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s}
+.prod-card{background:#fff;border:1px solid #e2e5ed;border-radius:12px;overflow:hidden;cursor:pointer;transition:border-color .15s}
 .prod-card:hover{border-color:#3a4070}
-.prod-img{height:120px;background:#13161f;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid #1e2235}
+.prod-img{height:120px;background:#f4f5f7;display:flex;align-items:center;justify-content:center;position:relative;border-bottom:1px solid #e2e5ed}
 .fit-badge{position:absolute;top:7px;left:7px;font-size:9px;font-weight:700;padding:2px 7px;border-radius:99px;background:#10b981;color:#fff;letter-spacing:.03em}
 .stock-badge{position:absolute;top:7px;right:7px}
 .prod-body{padding:10px 12px}
 .prod-brand{font-size:9px;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px}
-.prod-name{font-size:13px;font-weight:600;color:#e8ecf8;margin-bottom:3px;line-height:1.3}
-.prod-spec{font-size:10px;color:#4a5270;margin-bottom:7px;line-height:1.5}
+.prod-name{font-size:13px;font-weight:600;color:#1a1d2e;margin-bottom:3px;line-height:1.3}
+.prod-spec{font-size:10px;color:#6b7280;margin-bottom:7px;line-height:1.5}
 .prod-footer{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
-.prod-price{font-size:14px;font-weight:700;color:#e8ecf8}
-.add-btn{width:100%;padding:7px;background:#1a1035;color:#a78bfa;border:1px solid #7c3aed;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;font-weight:600}
+.prod-price{font-size:14px;font-weight:700;color:#1a1d2e}
+.add-btn{width:100%;padding:7px;background:#1a1035;color:#7c3aed;border:1px solid #7c3aed;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s;font-weight:600}
 .add-btn:hover{background:#7c3aed;color:#fff}
-.add-btn:disabled{background:#13161f;color:#2a3050;border-color:#1e2235;cursor:not-allowed}
+.add-btn:disabled{background:#13161f;color:#e2e5ed;border-color:#e2e5ed;cursor:not-allowed}
 
 .list-view{display:flex;flex-direction:column;gap:0}
-.list-hdr{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:9px 14px;background:#0d1018;border:1px solid #1e2235;border-radius:8px 8px 0 0;font-size:10px;font-weight:700;color:#4a5270;text-transform:uppercase;letter-spacing:.06em}
-.list-row{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:10px 14px;border:1px solid #1e2235;border-top:none;font-size:12px;align-items:center;background:#0a0c12}
+.list-hdr{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:9px 14px;background:#0d1018;border:1px solid #e2e5ed;border-radius:8px 8px 0 0;font-size:10px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.06em}
+.list-row{display:grid;grid-template-columns:50px 2fr 1fr 1fr 1fr 80px 90px 100px;gap:8px;padding:10px 14px;border:1px solid #e2e5ed;border-top:none;font-size:12px;align-items:center;background:#f4f5f7}
 .list-row:last-child{border-radius:0 0 8px 8px}
 .list-row:hover{background:#0d1018}
 .hidden{display:none!important}
@@ -89,20 +90,20 @@
   <form method="get" id="ymm-form">
     <div class="ymm-selects">
       <div>
-        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Year</label>
+        <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px">Year</label>
         <select id="ymm-year-first" name="year" onchange="loadMakes()" >
           <option value="">— select year —</option>
           {% for y in range(2026, 1999, -1) %}<option value="{{ y }}">{{ y }}</option>{% endfor %}
         </select>
       </div>
       <div>
-        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Make</label>
+        <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px">Make</label>
         <select id="ymm-make" name="make" onchange="loadModels()" disabled>
           <option value="">— pick year first —</option>
         </select>
       </div>
       <div>
-        <label style="font-size:11px;color:#4a5270;display:block;margin-bottom:4px">Model</label>
+        <label style="font-size:11px;color:#6b7280;display:block;margin-bottom:4px">Model</label>
         <select id="ymm-model" name="model" disabled>
           <option value="">— pick make first —</option>
         </select>
@@ -110,7 +111,7 @@
       <button type="submit" class="btn btn-p" id="ymm-go" disabled style="height:37px;white-space:nowrap">Find wheels</button>
     </div>
   </form>
-  <div style="margin-top:8px;font-size:11px;color:#2a3050">Fitment data powered by WheelSize API — covers 2000–2026 vehicles</div>
+  <div style="margin-top:8px;font-size:11px;color:#e2e5ed">Fitment data powered by WheelSize API — covers 2000–2026 vehicles</div>
   {% endif %}
 </div>
 
@@ -194,9 +195,9 @@
       <div class="prod-card">
         <div class="prod-img">
           <svg width="64" height="64" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="24" cy="24" r="22" stroke="#2a3050" stroke-width="2.5"/>
-            <circle cx="24" cy="24" r="9" stroke="#2a3050" stroke-width="2"/>
-            <circle cx="24" cy="24" r="2.5" fill="#2a3050"/>
+            <circle cx="24" cy="24" r="22" stroke="#e2e5ed" stroke-width="2.5"/>
+            <circle cx="24" cy="24" r="9" stroke="#e2e5ed" stroke-width="2"/>
+            <circle cx="24" cy="24" r="2.5" fill="#e2e5ed"/>
             <line x1="24" y1="15" x2="24" y2="4" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
             <line x1="32.6" y1="19.5" x2="41.1" y2="14.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
             <line x1="32.6" y1="28.5" x2="41.1" y2="33.5" stroke="#3a4070" stroke-width="2.5" stroke-linecap="round"/>
@@ -241,21 +242,21 @@
       {% for p in products %}
       <div class="list-row">
         <div>
-          <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#2a3050" stroke-width="2.5"/><circle cx="24" cy="24" r="8" stroke="#2a3050" stroke-width="2"/><circle cx="24" cy="24" r="2.5" fill="#2a3050"/></svg>
+          <svg width="36" height="36" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="20" stroke="#e2e5ed" stroke-width="2.5"/><circle cx="24" cy="24" r="8" stroke="#e2e5ed" stroke-width="2"/><circle cx="24" cy="24" r="2.5" fill="#e2e5ed"/></svg>
         </div>
         <div>
-          <div style="font-weight:600;color:#e8ecf8">{{ p.name }}</div>
+          <div style="font-weight:600;color:#1a1d2e">{{ p.name }}</div>
           <div style="font-size:10px;color:#7c3aed;font-weight:700">{{ p.brand }}</div>
         </div>
-        <div style="color:#8892b0">{{ p.diameter or '—' }} × {{ p.width or '—' }}</div>
+        <div style="color:#6b7280">{{ p.diameter or '—' }} × {{ p.width or '—' }}</div>
         <div><span class="bdg bgr" style="font-size:10px">{{ p.bolt_pattern or '—' }}</span></div>
-        <div style="color:#8892b0;font-size:11px">{{ p.finish or '—' }}</div>
+        <div style="color:#6b7280;font-size:11px">{{ p.finish or '—' }}</div>
         <div>
           {% if p.stock_qty == 0 %}<span class="bdg br2">Out</span>
           {% elif p.stock_qty <= (p.low_stock_threshold or 5) %}<span class="bdg ba">{{ p.stock_qty }}</span>
           {% else %}<span class="bdg bg">{{ p.stock_qty }}</span>{% endif %}
         </div>
-        <div style="font-weight:700;color:#e8ecf8">${{ '%.2f'|format(p.dealer_price or 0) }}</div>
+        <div style="font-weight:700;color:#1a1d2e">${{ '%.2f'|format(p.dealer_price or 0) }}</div>
         <div>
           <form method="post" action="/portal/cart/add" style="display:inline">
             <input type="hidden" name="product_id" value="{{ p.id }}">
@@ -265,7 +266,7 @@
         </div>
       </div>
       {% else %}
-      <div class="list-row" style="grid-column:1/-1;text-align:center;color:#4a5270;padding:32px">No products found</div>
+      <div class="list-row" style="grid-column:1/-1;text-align:center;color:#6b7280;padding:32px">No products found</div>
       {% endfor %}
     </div>
   </div>
