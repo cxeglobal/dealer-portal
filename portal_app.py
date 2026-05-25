@@ -91,16 +91,21 @@ def current_dealer():
     }
 
 # ── WheelSize API helpers ─────────────────────────────────────────────
+_ws_cache = {}
+
 def ws_get(endpoint, params=None):
     p = params or {}
     p['user_key'] = WHEELSIZE_KEY
+    cache_key = endpoint + str(sorted(p.items()))
+    if cache_key in _ws_cache:
+        return _ws_cache[cache_key]
     try:
-        r = requests.get(f"{WHEELSIZE_BASE}{endpoint}", params=p, timeout=8)
+        r = requests.get(f"{WHEELSIZE_BASE}{endpoint}", params=p, timeout=3)
         if r.status_code == 200:
             data = r.json()
-            if isinstance(data, dict) and 'data' in data:
-                return data['data']
-            return data
+            result = data['data'] if isinstance(data, dict) and 'data' in data else data
+            _ws_cache[cache_key] = result
+            return result
         return []
     except Exception as e:
         print(f"WheelSize API error: {e}")
@@ -260,6 +265,22 @@ def portal_shop():
     elif sort == 'stock': sql += " ORDER BY stock_qty DESC"
     else: sql += " ORDER BY brand, name"
 
+    # Pagination — 48 per page for fast loading
+    page = max(1, int(request.args.get('page', 1)))
+    per_page = 48
+    offset = (page - 1) * per_page
+
+    # Get total count first
+    count_sql = sql.replace("SELECT *", "SELECT COUNT(*)")
+    # Remove ORDER BY for count
+    count_sql = count_sql.rsplit(" ORDER BY", 1)[0]
+    try:
+        total_count = int(scalar(conn, count_sql, params or None) or 0)
+    except:
+        total_count = 0
+    total_pages = max(1, (total_count + per_page - 1) // per_page)
+
+    sql += f" LIMIT {per_page} OFFSET {offset}"
     products = fetchall(conn, sql, params or None)
 
     # Filter dropdowns
@@ -282,6 +303,7 @@ def portal_shop():
         pmin_f=pmin_f, pmax_f=pmax_f, q=q, sort=sort,
         ymm_year=ymm_year, ymm_make=ymm_make, ymm_model=ymm_model,
         ymm_fitment=ymm_fitment, ymm_bolt=ymm_bolt,
+        page=page, total_pages=total_pages, total_count=total_count,
         cart_count=cart_count, dealer=current_dealer())
 
 @app.route('/portal/shop/clear-ymm')

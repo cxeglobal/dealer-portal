@@ -188,7 +188,20 @@
       </div>
     </div>
 
-    <div class="results-meta">Showing <strong>{{ products|length }}</strong> products{% if ymm_year %} for <strong>{{ ymm_year }} {{ ymm_make }} {{ ymm_model }}</strong>{% endif %}</div>
+    <div class="results-meta" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <div>Showing <strong>{{ products|length }}</strong> of <strong>{{ total_count }}</strong> products{% if ymm_year %} for <strong>{{ ymm_year }} {{ ymm_make }} {{ ymm_model }}</strong>{% endif %}</div>
+      {% if total_pages > 1 %}
+      <div style="display:flex;align-items:center;gap:6px;font-size:12px">
+        {% if page > 1 %}
+        <a href="?{{ request.query_string.decode().replace('page='+page|string,'page='+(page-1)|string) if 'page=' in request.query_string.decode() else request.query_string.decode()+'&page='+(page-1)|string }}" class="btn btn-sm" style="padding:4px 10px">← Prev</a>
+        {% endif %}
+        <span style="color:#6b7280">Page {{ page }} of {{ total_pages }}</span>
+        {% if page < total_pages %}
+        <a href="?{{ request.query_string.decode().replace('page='+page|string,'page='+(page+1)|string) if 'page=' in request.query_string.decode() else request.query_string.decode()+'&page='+(page+1)|string }}" class="btn btn-sm" style="padding:4px 10px">Next →</a>
+        {% endif %}
+      </div>
+      {% endif %}
+    </div>
 
     <div class="grid-view" id="grid-view">
       {% for p in products %}
